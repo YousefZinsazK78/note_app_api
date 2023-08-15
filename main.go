@@ -6,6 +6,9 @@ import (
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gofiber/fiber/v2"
+	"github.com/yousefzinsazk78/note_app_api/api"
+	notedb "github.com/yousefzinsazk78/note_app_api/database/note_db"
 	"github.com/yousefzinsazk78/note_app_api/types"
 )
 
@@ -32,15 +35,19 @@ func main() {
 	}
 	defer db.Close()
 
-	//insert value note table
-	firstNote := types.Note{
-		ID: 2,
-	}
-	// insertValuesIntoNoteTable(db, firstNote)
+	var (
+		app             = fiber.New()
+		mysqlNoteStorer = notedb.NewMysqlNoteStorer(db)
+		api             = api.NewApi(mysqlNoteStorer)
+	)
 
-	// updateValueToNoteTable(db, firstNote)
-	deleteValueFromTbl(db, firstNote)
-	readValueFromNoteTable(db)
+	app.Post("/notes", api.HandleCreateNote)
+	app.Get("/notes", api.HandleNotes)
+	app.Get("/notes/:id", api.HandleNoteID)
+	app.Put("/notes/:id", api.HandleUpdateNote)
+	app.Delete("/notes/:id/delete", api.HandleDeleteNote)
+
+	app.Listen(":5000")
 }
 
 func deleteValueFromTbl(db *sql.DB, note types.Note) {

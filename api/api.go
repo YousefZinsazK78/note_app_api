@@ -1,7 +1,13 @@
 package api
 
-import "database/sql"
+import notedb "github.com/yousefzinsazk78/note_app_api/database/note_db"
 
 type Api struct {
-	db *sql.DB
+	NoteStorer notedb.NoteStorer
+}
+
+func NewApi(notestorer notedb.NoteStorer) *Api {
+	return &Api{
+		NoteStorer: notestorer,
+	}
 }
