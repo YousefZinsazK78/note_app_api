@@ -39,13 +39,14 @@ func main() {
 		app             = fiber.New()
 		mysqlNoteStorer = notedb.NewMysqlNoteStorer(db)
 		api             = api.NewApi(mysqlNoteStorer)
+		v1              = app.Group("/api")
 	)
 
-	app.Post("/notes", api.HandleCreateNote)
-	app.Get("/notes", api.HandleNotes)
-	app.Get("/notes/:id", api.HandleNoteID)
-	app.Put("/notes/:id", api.HandleUpdateNote)
-	app.Delete("/notes/:id/delete", api.HandleDeleteNote)
+	v1.Post("/v1/notes", api.HandleCreateNote)
+	v1.Get("/v1/notes", api.HandleNotes)
+	v1.Get("/v1/notes/:id", api.HandleNoteID)
+	v1.Put("/v1/notes/:id", api.HandleUpdateNote)
+	v1.Delete("/v1/notes/:id/delete", api.HandleDeleteNote)
 
 	app.Listen(":5000")
 }
