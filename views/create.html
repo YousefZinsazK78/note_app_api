@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>notes</title>
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">NotesApp</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-item nav-link active" href="/">Home </a>
+                    <a class="nav-item nav-link" href="/create">create<span class="sr-only">(current)</span></a>
+                </div>
+            </div>
+        </nav>
+
+        {{.title}}
+
+        <form>
+            <div class="form-row align-items-center">
+                <div class="col-sm-">
+                    <input type="text" class="form-control" placeholder="your test title">
+                </div>
+                <div class="col-">
+                    <input type="text" class="form-control" placeholder="description">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+
+</html>

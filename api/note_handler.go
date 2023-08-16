@@ -78,3 +78,20 @@ func (a *Api) HandleDeleteNote(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
+
+func (a *Api) HandleIndex(c *fiber.Ctx) error {
+	notes, err := a.NoteStorer.GetNotes()
+	if err != nil {
+		return ErrNotFound()
+	}
+	return c.Render("index", fiber.Map{
+		"notesVar": notes,
+	})
+}
+
+func (a *Api) HandleCreate(c *fiber.Ctx) error {
+	log.Println("hi /create")
+	return c.Render("create", fiber.Map{
+		"title": "this is test and works fine!",
+	})
+}
