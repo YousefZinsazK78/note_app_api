@@ -2,6 +2,7 @@ package notedb
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
@@ -12,7 +13,7 @@ type NoteStorer interface {
 	InsertNote(*types.Note) (int, error)
 	UpdateNote(*types.Note, int) (int, error)
 	DeleteNote(int) (int, error)
-	GetNoteByID(int) (types.Note, error)
+	GetNoteByID(int) (*types.Note, error)
 	GetNotes() ([]types.Note, error)
 }
 
@@ -105,25 +106,24 @@ func (m *MySqlNoteStorer) GetNotes() ([]types.Note, error) {
 	return notes, nil
 }
 
-func (m *MySqlNoteStorer) GetNoteByID(id int) (types.Note, error) {
+func (m *MySqlNoteStorer) GetNoteByID(id int) (*types.Note, error) {
 	const readvaluefromtbl = `SELECT * FROM note_table WHERE id=?;`
 	res, err := m.db.Query(readvaluefromtbl, id)
 	if err != nil {
-		return types.Note{}, err
+		return nil, err
 	}
 	defer res.Close()
 
 	var note types.Note
 	for res.Next() {
-
 		err := res.Scan(&note.ID, &note.Title, &note.Description)
 		if err != nil {
-			if err == sql.ErrNoRows {
-				return types.Note{}, fmt.Errorf("%d : there's no note in here", id)
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, fmt.Errorf("%d : note not found!", id)
 			}
-			return types.Note{}, err
+			return nil, err
 		}
 
 	}
-	return note, nil
+	return &note, nil
 }

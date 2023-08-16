@@ -2,6 +2,7 @@ package api
 
 import (
 	"log"
+	"net/http"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -54,9 +55,12 @@ func (a *Api) HandleNoteID(c *fiber.Ctx) error {
 	}
 	res, err := a.NoteStorer.GetNoteByID(resID)
 	if err != nil {
-		return c.JSON(err)
+		return ErrNotFound()
 	}
-	return c.JSON(res)
+	if res.ID == 0 && res.Title == "" && res.Description == "" {
+		return NewError(http.StatusNotFound, "not found!")
+	}
+	return c.Status(http.StatusOK).JSON(res)
 }
 
 func (a *Api) HandleDeleteNote(c *fiber.Ctx) error {
@@ -68,6 +72,9 @@ func (a *Api) HandleDeleteNote(c *fiber.Ctx) error {
 	res, err := a.NoteStorer.DeleteNote(resID)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+	if res == 0 {
+		return NewError(http.StatusBadRequest, "bad request")
 	}
 	return c.Status(fiber.StatusOK).JSON(res)
 }
