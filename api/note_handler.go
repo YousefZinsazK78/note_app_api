@@ -90,8 +90,65 @@ func (a *Api) HandleIndex(c *fiber.Ctx) error {
 }
 
 func (a *Api) HandleCreate(c *fiber.Ctx) error {
-	log.Println("hi /create")
-	return c.Render("create", fiber.Map{
-		"title": "this is test and works fine!",
+	return c.Render("create", fiber.Map{})
+}
+
+func (a *Api) HandleCreatePost(c *fiber.Ctx) error {
+	var note types.Note
+
+	if err := c.BodyParser(&note); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	_, err := a.NoteStorer.InsertNote(&note)
+	if err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	return c.Redirect("/")
+}
+
+func (a *Api) HandleDeletePost(c *fiber.Ctx) error {
+	var note types.Note
+
+	if err := c.BodyParser(&note); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	_, err := a.NoteStorer.DeleteNote(note.ID)
+	if err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	return c.Redirect("/")
+}
+
+func (a *Api) HandleEdit(c *fiber.Ctx) error {
+	var note types.Note
+
+	if err := c.QueryParser(&note); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	return c.Render("edit", fiber.Map{
+		"ID":          note.ID,
+		"Title":       note.Title,
+		"Description": note.Description,
 	})
+}
+
+func (a *Api) HandleEditPost(c *fiber.Ctx) error {
+	var note types.Note
+
+	if err := c.BodyParser(&note); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	log.Println(note.ID)
+	_, err := a.NoteStorer.UpdateNote(&note, note.ID)
+	if err != nil {
+		return NewError(fiber.StatusAccepted, err.Error())
+	}
+
+	return c.Redirect("/")
 }

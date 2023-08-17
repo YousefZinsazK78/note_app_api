@@ -42,9 +42,16 @@ func main() {
 	)
 
 	app.Static("/static", "./views")
+
+	//html template version
 	app.Get("/", api.HandleIndex)
 	app.Get("/create", api.HandleCreate)
+	app.Post("/create", api.HandleCreatePost)
+	app.Post("/", api.HandleDeletePost)
+	app.Get("/edit", api.HandleEdit)
+	app.Post("/edit", api.HandleEditPost)
 
+	//json version 1
 	v1.Post("/v1/notes", api.HandleCreateNote)
 	v1.Get("/v1/notes", api.HandleNotes)
 	v1.Get("/v1/notes/:id", api.HandleNoteID)

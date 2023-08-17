@@ -1,7 +1,7 @@
 package types
 
 type Note struct {
-	ID          int    `json:"id,omitempty"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	ID          int    `json:"id,omitempty" form:"id"`
+	Title       string `json:"title" form:"title"`
+	Description string `json:"description" form:"description"`
 }

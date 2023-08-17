@@ -24,18 +24,18 @@
             </div>
         </nav>
 
-
         <div class="col-8 mt-3">
-            <form action="/create" method="post">
+            <form action="/edit" method="post">
+                <input type="hidden" name="id" value="{{.ID}}">
                 <div class="mb-4">
                     <label for="exampleFormControlInput1" class="form-label">Title:</label>
-                    <input type="text" name="title" class="form-control" id="exampleFormControlInput1" placeholder="Title">
+                    <input type="text" name="title" class="form-control" id="exampleFormControlInput1" value="{{.Title}}" placeholder="Title">
                 </div>
                 <div class="mb-4">
                     <label for="exampleFormControlInput2" class="form-label">Description:</label>
-                    <input type="text" name="description" class="form-control" id="exampleFormControlInput2" placeholder="Description">
+                    <input type="text" name="description" class="form-control" id="exampleFormControlInput2" value="{{.Description}}" placeholder="Description">
                 </div>
-                <button type="submit" class="btn btn-outline-primary">Create</button>
+                <button type="submit" class="btn btn-outline-success">Edit</button>
             </form>
         </div>
     </div>

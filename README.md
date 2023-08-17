@@ -11,3 +11,4 @@
 > 
 > delete note
 
+https://www.youtube.com/watch?v=8nW-IPrzM1g
