@@ -36,3 +36,17 @@ func ErrNotFound() error {
 		Err:  "resource not found!",
 	}
 }
+
+func ErrBadRequest() error {
+	return Error{
+		Code: http.StatusBadRequest,
+		Err:  "bad Request!",
+	}
+}
+
+func ErrUnAuthorized() error {
+	return Error{
+		Code: http.StatusUnauthorized,
+		Err:  "unauthorized!",
+	}
+}

@@ -10,6 +10,8 @@ import (
 	"github.com/gofiber/template/html/v2"
 	"github.com/yousefzinsazk78/note_app_api/api"
 	notedb "github.com/yousefzinsazk78/note_app_api/database/note_db"
+	sessiontbl "github.com/yousefzinsazk78/note_app_api/database/session_tbl"
+	usertbl "github.com/yousefzinsazk78/note_app_api/database/user_tbl"
 )
 
 const (
@@ -19,6 +21,10 @@ const (
 	dbname   = "noteappdb"
 	port     = ":5000"
 )
+
+//final task
+//todo : login and signup and logout handling for app // authentication
+//todo : user authorization
 
 func main() {
 
@@ -36,12 +42,19 @@ func main() {
 				Views:        tmplEngine,
 			},
 		)
-		mysqlNoteStorer = notedb.NewMysqlNoteStorer(db)
-		api             = api.NewApi(mysqlNoteStorer)
-		v1              = app.Group("/api")
+		mysqlNoteStorer    = notedb.NewMysqlNoteStorer(db)
+		mysqlUserStorer    = usertbl.NewMysqlUserStorer(db)
+		mysqlSessionStorer = sessiontbl.NewMysqlSessionStorer(db)
+		api                = api.NewApi(mysqlNoteStorer, mysqlUserStorer, mysqlSessionStorer)
+		v1                 = app.Group("/api")
 	)
 
 	app.Static("/static", "./views")
+
+	//sign-in and logout
+	app.Get("/welcome", api.HandleWelcome)
+	app.Post("/signin", api.HandleSignIn)
+	app.Post("/signup", api.HandleSignUp)
 
 	//html template version
 	app.Get("/", api.HandleIndex)
@@ -59,11 +72,8 @@ func main() {
 	v1.Delete("/v1/notes/:id/delete", api.HandleDeleteNote)
 	log.Fatal(app.Listen(port))
 
-	//TODO: make html files for note app
-	//TODO: body parser and handle it
-	//come on
 }
 
 func generateDsn() string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", username, password, hostname, dbname)
 }

@@ -123,7 +123,6 @@ func (m *MySqlNoteStorer) GetNoteByID(id int) (*types.Note, error) {
 			}
 			return nil, err
 		}
-
 	}
 	return &note, nil
 }

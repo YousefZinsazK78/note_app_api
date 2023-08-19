@@ -1,11 +1,14 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/yousefzinsazk78/note_app_api/types"
 )
 
@@ -151,4 +154,75 @@ func (a *Api) HandleEditPost(c *fiber.Ctx) error {
 	}
 
 	return c.Redirect("/")
+}
+
+func (a *Api) HandleWelcome(c *fiber.Ctx) error {
+	session_token := c.Cookies("session_token")
+	if session_token == "" {
+		return ErrUnAuthorized()
+	}
+
+	session, err := a.SessionStorer.GetSession(session_token)
+	log.Println("get session from db : ", session)
+	if err != nil {
+		return NewError(fiber.StatusUnauthorized, err.Error())
+		// return ErrUnAuthorized()
+	}
+	if session.IsExpired() {
+		log.Println("session IsExpired : ", session.IsExpired())
+		err := a.SessionStorer.DeleteSession(session_token)
+		if err != nil {
+			return ErrBadRequest()
+		}
+		return ErrUnAuthorized()
+	}
+	return c.Status(fiber.StatusOK).SendString(fmt.Sprintf("welcome %s", session.Username))
+}
+
+func (a *Api) HandleSignIn(c *fiber.Ctx) error {
+	//get information from request body
+	var user types.User
+	if err := c.BodyParser(&user); err != nil {
+		return ErrBadRequest()
+	}
+	//check username and password
+	dbUser, err := a.UserStorer.GetUserByUsername(user.Username)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	if dbUser.Username != user.Username && dbUser.Password != user.Password {
+		return ErrUnAuthorized()
+	}
+
+	sessionToken := uuid.NewString()
+	expiresAt := time.Now().Add(120 * time.Second)
+
+	err = a.SessionStorer.InsertSession(user.Username, expiresAt, sessionToken)
+	if err != nil {
+		return NewError(fiber.StatusInternalServerError, "session token not inserted")
+	}
+
+	user_cookie := fiber.Cookie{
+		Name:    "session_token",
+		Value:   sessionToken,
+		Expires: expiresAt,
+	}
+	c.Cookie(&user_cookie)
+
+	return c.Status(fiber.StatusAccepted).SendString("user login successfully!")
+}
+
+func (a *Api) HandleSignUp(c *fiber.Ctx) error {
+	//get information from request body
+	var user types.User
+	if err := c.BodyParser(&user); err != nil {
+		return ErrBadRequest()
+	}
+	//store user in database
+	if err := a.UserStorer.InsertUser(user); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	return c.Status(fiber.StatusAccepted).SendString("user successfully inserted!")
 }
