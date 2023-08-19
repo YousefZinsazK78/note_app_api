@@ -224,3 +224,46 @@ func (a *Api) HandleSignUp(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusAccepted).SendString("user successfully inserted!")
 }
+
+func (a *Api) HandleRefresh(c *fiber.Ctx) error {
+	session_token := c.Cookies("session_token")
+	if session_token == "" {
+		return ErrUnAuthorized()
+	}
+
+	session, err := a.SessionStorer.GetSession(session_token)
+	if err != nil {
+		return ErrUnAuthorized()
+	}
+
+	if session.IsExpired() {
+		err := a.SessionStorer.DeleteSession(session_token)
+		if err != nil {
+			return ErrBadRequest()
+		}
+		return ErrUnAuthorized()
+	}
+
+	newSessionToken := uuid.NewString()
+	expiresAt := time.Now().Add(120 * time.Second)
+
+	err = a.SessionStorer.InsertSession(session.Username, expiresAt, newSessionToken)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	//delete old session token
+	err = a.SessionStorer.DeleteSession(session_token)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	user_cookie := fiber.Cookie{
+		Name:    "session_token",
+		Value:   newSessionToken,
+		Expires: expiresAt,
+	}
+	c.Cookie(&user_cookie)
+
+	return c.Status(fiber.StatusAccepted).SendString("user login successfully!")
+}

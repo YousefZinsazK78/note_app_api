@@ -23,7 +23,6 @@ const (
 )
 
 //final task
-//todo : login and signup and logout handling for app // authentication
 //todo : user authorization
 
 func main() {
@@ -54,6 +53,7 @@ func main() {
 	app.Get("/welcome", api.HandleWelcome)
 	app.Post("/signin", api.HandleSignIn)
 	app.Post("/signup", api.HandleSignUp)
+	app.Get("/refresh", api.HandleRefresh)
 
 	//html template version
 	app.Get("/", api.HandleIndex)
