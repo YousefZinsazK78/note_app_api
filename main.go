@@ -54,6 +54,7 @@ func main() {
 	app.Post("/signin", api.HandleSignIn)
 	app.Post("/signup", api.HandleSignUp)
 	app.Get("/refresh", api.HandleRefresh)
+	app.Get("/logout", api.HandleLogout)
 
 	//html template version
 	app.Get("/", api.HandleIndex)

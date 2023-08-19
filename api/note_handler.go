@@ -267,3 +267,25 @@ func (a *Api) HandleRefresh(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusAccepted).SendString("user login successfully!")
 }
+
+func (a *Api) HandleLogout(c *fiber.Ctx) error {
+	session_token := c.Cookies("session_token")
+	if session_token == "" {
+		return ErrUnAuthorized()
+	}
+
+	//delete session token
+	err := a.SessionStorer.DeleteSession(session_token)
+	if err != nil {
+		return ErrBadRequest()
+	}
+
+	user_cookie := fiber.Cookie{
+		Name:    "session_token",
+		Value:   "",
+		Expires: time.Now(),
+	}
+	c.Cookie(&user_cookie)
+
+	return c.Status(fiber.StatusAccepted).SendString("logout successfully!")
+}
