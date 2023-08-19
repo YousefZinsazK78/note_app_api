@@ -163,13 +163,11 @@ func (a *Api) HandleWelcome(c *fiber.Ctx) error {
 	}
 
 	session, err := a.SessionStorer.GetSession(session_token)
-	log.Println("get session from db : ", session)
 	if err != nil {
 		return NewError(fiber.StatusUnauthorized, err.Error())
 		// return ErrUnAuthorized()
 	}
 	if session.IsExpired() {
-		log.Println("session IsExpired : ", session.IsExpired())
 		err := a.SessionStorer.DeleteSession(session_token)
 		if err != nil {
 			return ErrBadRequest()

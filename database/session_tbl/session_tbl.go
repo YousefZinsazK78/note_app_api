@@ -55,7 +55,6 @@ func (m *MysqlSessionStorer) DeleteSession(sessionToken string) error {
 
 func (m *MysqlSessionStorer) GetSession(SessionToken string) (*types.Session, error) {
 	selectQuery := fmt.Sprintf(`SELECT * FROM session_tbl WHERE SessionToken = '%s';`, SessionToken)
-
 	res, err := m.db.Query(selectQuery)
 	if err != nil {
 		return nil, err
@@ -73,6 +72,5 @@ func (m *MysqlSessionStorer) GetSession(SessionToken string) (*types.Session, er
 		}
 
 	}
-
 	return &session, nil
 }

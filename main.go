@@ -27,7 +27,6 @@ const (
 //todo : user authorization
 
 func main() {
-
 	db, err := sql.Open("mysql", generateDsn())
 	if err != nil {
 		log.Fatal(err)
