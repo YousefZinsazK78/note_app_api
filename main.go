@@ -24,6 +24,7 @@ const (
 
 //final task
 //todo : user authorization
+//todo : validation for input forms and jsons and ...
 
 func main() {
 	db, err := sql.Open("mysql", generateDsn())
