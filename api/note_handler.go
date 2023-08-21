@@ -89,12 +89,17 @@ func (a *Api) HandleIndex(c *fiber.Ctx) error {
 		return ErrNotFound()
 	}
 	return c.Render("index", fiber.Map{
-		"notesVar": notes,
+		"notesVar":              notes,
+		"has_session_token":     c.Cookies("session_tokekn") == "",
+		"has_not_session_token": c.Cookies("session_tokekn") != "",
 	})
 }
 
 func (a *Api) HandleCreate(c *fiber.Ctx) error {
-	return c.Render("create", fiber.Map{})
+	return c.Render("create", fiber.Map{
+		"has_session_token":     c.Cookies("session_token") == "",
+		"has_not_session_token": c.Cookies("session_tokekn") != "",
+	})
 }
 
 func (a *Api) HandleCreatePost(c *fiber.Ctx) error {
@@ -218,6 +223,7 @@ func (a *Api) HandleSignUp(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil {
 		return ErrBadRequest()
 	}
+
 	//store user in database
 	if err := a.UserStorer.InsertUser(user); err != nil {
 		return NewError(fiber.StatusBadRequest, err.Error())
@@ -274,13 +280,12 @@ func (a *Api) HandleLogout(c *fiber.Ctx) error {
 	if session_token == "" {
 		return ErrUnAuthorized()
 	}
-
+	log.Println(session_token)
 	//delete session token
 	err := a.SessionStorer.DeleteSession(session_token)
 	if err != nil {
 		return ErrBadRequest()
 	}
-
 	user_cookie := fiber.Cookie{
 		Name:    "session_token",
 		Value:   "",
@@ -289,4 +294,12 @@ func (a *Api) HandleLogout(c *fiber.Ctx) error {
 	c.Cookie(&user_cookie)
 
 	return c.Status(fiber.StatusAccepted).SendString("logout successfully!")
+}
+
+func (a *Api) HandleSignUpGet(c *fiber.Ctx) error {
+	return c.Render("signup", fiber.Map{})
+}
+
+func (a *Api) HandleSignInGet(c *fiber.Ctx) error {
+	return c.Render("login", fiber.Map{})
 }

@@ -20,8 +20,14 @@
                 <div class="navbar-nav">
                     <a class="nav-item nav-link active" href="/">Home</a>
                     <a class="nav-item nav-link" href="/create">create</a>
+                    {{ if .has_not_session_token }}
                     <a class="nav-item nav-link" href="/signin">sign in</a>
                     <a class="nav-item nav-link" href="/signup">sign up</a>
+                    {{ end }}
+                    {{ if .has_session_token }}
+                    <a class="nav-item nav-link" href="#">{{ .Username }}</a>
+                    <a class="nav-item nav-link" href="/logout">logout</a>
+                    {{ end }}
                 </div>
             </div>
         </nav>
@@ -34,19 +40,19 @@
                     <div class="card-body">
                         <h5 class="card-title">{{.Title}}</h5>
                         <p class="card-text">{{.Description}}</p>
-                       <div class="row">
-                        <form action="/" method="post">
-                            <input type="hidden" name="id" value="{{.ID}}">
-                            <button type="submit" class="btn btn-danger">Delete It💔</button>
-                        </form>
-                        <div class="mr-2"></div>
-                        <form action="/edit" method="get">
-                            <input type="hidden" name="id" value="{{.ID}}">
-                            <input type="hidden" name="title" value="{{.Title}}">
-                            <input type="hidden" name="description" value="{{.Description}}">
-                            <button type="submit" class="btn btn-success">edit It🤞😉</button>
-                        </form>
-                       </div>
+                        <div class="row">
+                            <form action="/" method="post">
+                                <input type="hidden" name="id" value="{{.ID}}">
+                                <button type="submit" class="btn btn-danger">Delete It💔</button>
+                            </form>
+                            <div class="mr-2"></div>
+                            <form action="/edit" method="get">
+                                <input type="hidden" name="id" value="{{.ID}}">
+                                <input type="hidden" name="title" value="{{.Title}}">
+                                <input type="hidden" name="description" value="{{.Description}}">
+                                <button type="submit" class="btn btn-success">edit It🤞😉</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

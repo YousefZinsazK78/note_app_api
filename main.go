@@ -45,7 +45,7 @@ func main() {
 		mysqlUserStorer    = usertbl.NewMysqlUserStorer(db)
 		mysqlSessionStorer = sessiontbl.NewMysqlSessionStorer(db)
 		apiV1              = api.NewApi(mysqlNoteStorer, mysqlUserStorer, mysqlSessionStorer)
-		v1                 = app.Group("/api", api.AuthMiddleware)
+		v1                 = app.Group("/api", apiV1.AuthMiddleware)
 	)
 
 	app.Static("/static", "./views")
@@ -53,7 +53,9 @@ func main() {
 	//sign-in and logout
 	app.Get("/welcome", apiV1.HandleWelcome)
 	app.Post("/signin", apiV1.HandleSignIn)
+	app.Get("/signin", apiV1.HandleSignInGet)
 	app.Post("/signup", apiV1.HandleSignUp)
+	app.Get("/signup", apiV1.HandleSignUpGet)
 	app.Get("/refresh", apiV1.HandleRefresh)
 	app.Get("/logout", apiV1.HandleLogout)
 

@@ -20,6 +20,14 @@
                 <div class="navbar-nav">
                     <a class="nav-item nav-link active" href="/">Home </a>
                     <a class="nav-item nav-link" href="/create">create<span class="sr-only">(current)</span></a>
+                    {{ if .has_not_session_token }}
+                    <a class="nav-item nav-link" href="/signin">sign in</a>
+                    <a class="nav-item nav-link" href="/signup">sign up</a>
+                    {{ end }}
+                    {{ if not .has_session_token }}
+                    <a class="nav-item nav-link" href="#">{{ .Username }}</a>
+                    <a class="nav-item nav-link" href="/logout">logout</a>
+                    {{ end }}
                 </div>
             </div>
         </nav>
@@ -29,11 +37,13 @@
             <form action="/create" method="post">
                 <div class="mb-4">
                     <label for="exampleFormControlInput1" class="form-label">Title:</label>
-                    <input type="text" name="title" class="form-control" id="exampleFormControlInput1" placeholder="Title">
+                    <input type="text" name="title" class="form-control" id="exampleFormControlInput1"
+                        placeholder="Title">
                 </div>
                 <div class="mb-4">
                     <label for="exampleFormControlInput2" class="form-label">Description:</label>
-                    <input type="text" name="description" class="form-control" id="exampleFormControlInput2" placeholder="Description">
+                    <input type="text" name="description" class="form-control" id="exampleFormControlInput2"
+                        placeholder="Description">
                 </div>
                 <button type="submit" class="btn btn-outline-primary">Create</button>
             </form>
