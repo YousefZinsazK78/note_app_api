@@ -43,6 +43,7 @@ func (a *Api) HandleUpdateNote(c *fiber.Ctx) error {
 }
 
 func (a *Api) HandleNotes(c *fiber.Ctx) error {
+
 	res, err := a.NoteStorer.GetNotes()
 	if err != nil {
 		return c.JSON(err)

@@ -44,33 +44,33 @@ func main() {
 		mysqlNoteStorer    = notedb.NewMysqlNoteStorer(db)
 		mysqlUserStorer    = usertbl.NewMysqlUserStorer(db)
 		mysqlSessionStorer = sessiontbl.NewMysqlSessionStorer(db)
-		api                = api.NewApi(mysqlNoteStorer, mysqlUserStorer, mysqlSessionStorer)
-		v1                 = app.Group("/api")
+		apiV1              = api.NewApi(mysqlNoteStorer, mysqlUserStorer, mysqlSessionStorer)
+		v1                 = app.Group("/api", api.AuthMiddleware)
 	)
 
 	app.Static("/static", "./views")
 
 	//sign-in and logout
-	app.Get("/welcome", api.HandleWelcome)
-	app.Post("/signin", api.HandleSignIn)
-	app.Post("/signup", api.HandleSignUp)
-	app.Get("/refresh", api.HandleRefresh)
-	app.Get("/logout", api.HandleLogout)
+	app.Get("/welcome", apiV1.HandleWelcome)
+	app.Post("/signin", apiV1.HandleSignIn)
+	app.Post("/signup", apiV1.HandleSignUp)
+	app.Get("/refresh", apiV1.HandleRefresh)
+	app.Get("/logout", apiV1.HandleLogout)
 
 	//html template version
-	app.Get("/", api.HandleIndex)
-	app.Get("/create", api.HandleCreate)
-	app.Post("/create", api.HandleCreatePost)
-	app.Post("/", api.HandleDeletePost)
-	app.Get("/edit", api.HandleEdit)
-	app.Post("/edit", api.HandleEditPost)
+	app.Get("/", apiV1.HandleIndex)
+	app.Get("/create", apiV1.HandleCreate)
+	app.Post("/create", apiV1.HandleCreatePost)
+	app.Post("/", apiV1.HandleDeletePost)
+	app.Get("/edit", apiV1.HandleEdit)
+	app.Post("/edit", apiV1.HandleEditPost)
 
 	//json version 1
-	v1.Post("/v1/notes", api.HandleCreateNote)
-	v1.Get("/v1/notes", api.HandleNotes)
-	v1.Get("/v1/notes/:id", api.HandleNoteID)
-	v1.Put("/v1/notes/:id", api.HandleUpdateNote)
-	v1.Delete("/v1/notes/:id/delete", api.HandleDeleteNote)
+	v1.Post("/v1/notes", apiV1.HandleCreateNote)
+	v1.Get("/v1/notes", apiV1.HandleNotes)
+	v1.Get("/v1/notes/:id", apiV1.HandleNoteID)
+	v1.Put("/v1/notes/:id", apiV1.HandleUpdateNote)
+	v1.Delete("/v1/notes/:id/delete", apiV1.HandleDeleteNote)
 	log.Fatal(app.Listen(port))
 
 }
