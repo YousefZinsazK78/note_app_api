@@ -18,10 +18,13 @@ func (a *Api) HandleCreateNote(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
 
+	log.Println("this is top of validate func")
 	//validate note model
 	if err := note.ValidateNote(); err != nil {
+		log.Println("this is inside of validate func")
 		return NewError(fiber.StatusBadRequest, err.Error())
 	}
+	log.Println("this is bottom of validate func")
 
 	res, err := a.NoteStorer.InsertNote(&note)
 	if err != nil {
@@ -110,8 +113,13 @@ func (a *Api) HandleCreate(c *fiber.Ctx) error {
 
 func (a *Api) HandleCreatePost(c *fiber.Ctx) error {
 	var note types.Note
-
 	if err := c.BodyParser(&note); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	//validate note model
+	if err := note.ValidateNote(); err != nil {
+		log.Println("this is inside of validate func")
 		return NewError(fiber.StatusBadRequest, err.Error())
 	}
 
