@@ -17,6 +17,12 @@ func (a *Api) HandleCreateNote(c *fiber.Ctx) error {
 	if err := c.BodyParser(&note); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
 	}
+
+	//validate note model
+	if err := note.ValidateNote(); err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
 	res, err := a.NoteStorer.InsertNote(&note)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err)
@@ -218,10 +224,16 @@ func (a *Api) HandleSignIn(c *fiber.Ctx) error {
 }
 
 func (a *Api) HandleSignUp(c *fiber.Ctx) error {
+
 	//get information from request body
 	var user types.User
 	if err := c.BodyParser(&user); err != nil {
 		return ErrBadRequest()
+	}
+
+	//validate user
+	if err := user.ValidateUser(); err != nil {
+		return ErrInvalidCredentials()
 	}
 
 	//store user in database
@@ -229,6 +241,7 @@ func (a *Api) HandleSignUp(c *fiber.Ctx) error {
 		return NewError(fiber.StatusBadRequest, err.Error())
 	}
 
+	//return success message
 	return c.Status(fiber.StatusAccepted).SendString("user successfully inserted!")
 }
 

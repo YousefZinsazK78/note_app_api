@@ -1,8 +1,6 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -32,21 +30,28 @@ func NewError(code int, err string) Error {
 
 func ErrNotFound() error {
 	return Error{
-		Code: http.StatusNotFound,
+		Code: fiber.StatusNotFound,
 		Err:  "resource not found!",
 	}
 }
 
 func ErrBadRequest() error {
 	return Error{
-		Code: http.StatusBadRequest,
+		Code: fiber.StatusBadRequest,
 		Err:  "bad Request!",
 	}
 }
 
 func ErrUnAuthorized() error {
 	return Error{
-		Code: http.StatusUnauthorized,
+		Code: fiber.StatusUnauthorized,
 		Err:  "unauthorized!",
+	}
+}
+
+func ErrInvalidCredentials() error {
+	return Error{
+		Code: fiber.StatusBadRequest,
+		Err:  "Invalid Credentials",
 	}
 }
