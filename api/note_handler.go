@@ -234,18 +234,19 @@ func (a *Api) HandleSignIn(c *fiber.Ctx) error {
 func (a *Api) HandleSignUp(c *fiber.Ctx) error {
 
 	//get information from request body
-	var user types.User
+	var user *types.User
 	if err := c.BodyParser(&user); err != nil {
 		return ErrBadRequest()
 	}
 
+	user.IsAdmin = false
 	//validate user
 	if err := user.ValidateUser(); err != nil {
 		return ErrInvalidCredentials()
 	}
 
 	//store user in database
-	if err := a.UserStorer.InsertUser(user); err != nil {
+	if err := a.UserStorer.InsertUser(*user); err != nil {
 		return NewError(fiber.StatusBadRequest, err.Error())
 	}
 

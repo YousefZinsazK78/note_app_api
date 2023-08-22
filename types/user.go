@@ -6,10 +6,11 @@ type User struct {
 	ID       int    `json:"-" form:"-"`
 	Username string `json:"username" form:"username"`
 	Password string `json:"password" form:"password"`
+	IsAdmin  bool   `json:"IsAdmin"`
 }
 
 func (u User) ValidateUser() error {
-	if len(u.Password) > 5 || len(u.Password) < 13 {
+	if len(u.Password) < 3 {
 		return fmt.Errorf("your password is weak %d , write strong password ", len(u.Password))
 	}
 	if len(u.Username) < 3 {

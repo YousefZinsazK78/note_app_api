@@ -3,3 +3,6 @@ build:
 
 run: build
 	@./bin/noteapp
+
+seed: 
+	@go run seed/main.go

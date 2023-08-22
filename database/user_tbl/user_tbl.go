@@ -25,13 +25,13 @@ func NewMysqlUserStorer(db *sql.DB) *MysqlUserStorer {
 }
 
 func (m *MysqlUserStorer) InsertUser(user types.User) error {
-	insertQuery := `INSERT INTO user_tbl(Username, Password) VALUES (?, ?);`
+	insertQuery := `INSERT INTO user_tbl(Username, Password, IsAdmin) VALUES (?, ?, ?);`
 
 	stmt, err := m.db.Prepare(insertQuery)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(user.Username, user.Password)
+	_, err = stmt.Exec(user.Username, user.Password, user.IsAdmin)
 	if err != nil {
 		return err
 	}
