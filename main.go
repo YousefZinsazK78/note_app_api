@@ -22,9 +22,6 @@ const (
 	port     = ":5000"
 )
 
-//final task
-//todo : user authorization / add admin user and do some funcationality /
-
 func main() {
 	db, err := sql.Open("mysql", generateDsn())
 	if err != nil {
