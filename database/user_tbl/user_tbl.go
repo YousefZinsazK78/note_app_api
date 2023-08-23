@@ -62,7 +62,7 @@ func (m *MysqlUserStorer) GetUserByUsername(username string) (*types.User, error
 
 	var user types.User
 	for res.Next() {
-		err := res.Scan(&user.ID, &user.Username, &user.Password)
+		err := res.Scan(&user.ID, &user.Username, &user.Password, &user.IsAdmin)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, fmt.Errorf("%s : not found!", username)

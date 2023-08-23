@@ -10,7 +10,7 @@ import (
 )
 
 type SessionStorer interface {
-	InsertSession(string, time.Time, string) error
+	InsertSession(string, bool, time.Time, string) error
 	DeleteSession(string) error
 	GetSession(string) (*types.Session, error)
 }
@@ -25,14 +25,14 @@ func NewMysqlSessionStorer(db *sql.DB) *MysqlSessionStorer {
 	}
 }
 
-func (m *MysqlSessionStorer) InsertSession(username string, expireTime time.Time, sessionToken string) error {
-	insertSession := `INSERT INTO session_tbl(Username, SessionExpiry, SessionToken) VALUES (?, ?, ?);`
+func (m *MysqlSessionStorer) InsertSession(username string, isAdmin bool, expireTime time.Time, sessionToken string) error {
+	insertSession := `INSERT INTO session_tbl(Username, IsAdmin, SessionExpiry, SessionToken) VALUES (?, ?, ?, ?);`
 
 	stmt, err := m.db.Prepare(insertSession)
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(username, expireTime, sessionToken)
+	_, err = stmt.Exec(username, isAdmin, expireTime, sessionToken)
 	if err != nil {
 		return err
 	}
@@ -63,7 +63,7 @@ func (m *MysqlSessionStorer) GetSession(SessionToken string) (*types.Session, er
 
 	var session types.Session
 	for res.Next() {
-		err := res.Scan(&session.Username, &session.SessionExpiry, &session.SessionToken)
+		err := res.Scan(&session.Username, &session.IsAdmin, &session.SessionExpiry, &session.SessionToken)
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return nil, fmt.Errorf("%s : not found!", SessionToken)

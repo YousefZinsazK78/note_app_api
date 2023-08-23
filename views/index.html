@@ -25,14 +25,15 @@
                     <a class="nav-item nav-link" href="/signup">sign up</a>
                     {{ end }}
                     {{ if .has_session_token }}
-                    <a class="nav-item nav-link" href="#">{{ .Username }}</a>
                     <a class="nav-item nav-link" href="/logout">logout</a>
                     {{ end }}
                 </div>
             </div>
         </nav>
 
-
+        {{ if .isAdmin }}
+            <h1>admin protocol</h1>
+        {{ end }}
         <div class="row mt-5">
             {{range .notesVar}}
             <div class="col-3">
@@ -43,7 +44,9 @@
                         <div class="row">
                             <form action="/" method="post">
                                 <input type="hidden" name="id" value="{{.ID}}">
+                                
                                 <button type="submit" class="btn btn-danger">Delete It💔</button>
+                                
                             </form>
                             <div class="mr-2"></div>
                             <form action="/edit" method="get">

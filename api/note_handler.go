@@ -97,17 +97,24 @@ func (a *Api) HandleIndex(c *fiber.Ctx) error {
 	if err != nil {
 		return ErrNotFound()
 	}
+
+	session, err := a.SessionStorer.GetSession(c.Cookies("session_token"))
+	if err != nil {
+		return NewError(fiber.StatusBadRequest, err.Error())
+	}
+
 	return c.Render("index", fiber.Map{
 		"notesVar":              notes,
-		"has_session_token":     c.Cookies("session_tokekn") == "",
-		"has_not_session_token": c.Cookies("session_tokekn") != "",
+		"has_session_token":     c.Cookies("session_token") != "",
+		"has_not_session_token": c.Cookies("session_token") == "",
+		"isAdmin":               session.IsAdmin,
 	})
 }
 
 func (a *Api) HandleCreate(c *fiber.Ctx) error {
 	return c.Render("create", fiber.Map{
-		"has_session_token":     c.Cookies("session_token") == "",
-		"has_not_session_token": c.Cookies("session_tokekn") != "",
+		"has_session_token":     c.Cookies("session_token") != "",
+		"has_not_session_token": c.Cookies("session_token") == "",
 	})
 }
 
@@ -203,20 +210,21 @@ func (a *Api) HandleSignIn(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil {
 		return ErrBadRequest()
 	}
+	log.Println("first user binding get : ", user)
 	//check username and password
 	dbUser, err := a.UserStorer.GetUserByUsername(user.Username)
 	if err != nil {
-		return ErrBadRequest()
+		return NewError(fiber.StatusBadRequest, err.Error())
+		// return ErrBadRequest()
 	}
-
+	log.Println("database getting user : ", dbUser)
 	if dbUser.Username != user.Username && dbUser.Password != user.Password {
 		return ErrUnAuthorized()
 	}
-
 	sessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(120 * time.Second)
 
-	err = a.SessionStorer.InsertSession(user.Username, expiresAt, sessionToken)
+	err = a.SessionStorer.InsertSession(user.Username, dbUser.IsAdmin, expiresAt, sessionToken)
 	if err != nil {
 		return NewError(fiber.StatusInternalServerError, "session token not inserted")
 	}
@@ -276,7 +284,7 @@ func (a *Api) HandleRefresh(c *fiber.Ctx) error {
 	newSessionToken := uuid.NewString()
 	expiresAt := time.Now().Add(120 * time.Second)
 
-	err = a.SessionStorer.InsertSession(session.Username, expiresAt, newSessionToken)
+	err = a.SessionStorer.InsertSession(session.Username, session.IsAdmin, expiresAt, newSessionToken)
 	if err != nil {
 		return ErrBadRequest()
 	}

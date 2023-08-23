@@ -4,6 +4,7 @@ import "time"
 
 type Session struct {
 	Username      string
+	IsAdmin       bool
 	SessionExpiry time.Time
 	SessionToken  string
 }
